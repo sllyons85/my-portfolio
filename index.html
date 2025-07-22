@@ -1,31 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
-  <meta charset="UTF-8">
-  <title>Scott Lyons – AI + Python Portfolio</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Scott Lyons - AI & Python Portfolio</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-white font-sans p-6">
-  <div class="max-w-4xl mx-auto">
-    <h1 class="text-4xl font-bold mb-2">Scott Lyons</h1>
-    <p class="text-gray-400 mb-8">Python Developer | AI Artist | ETL Engineer</p>
+<body class="bg-gray-900 text-white font-sans min-h-screen flex flex-col items-center p-6">
 
-    <section class="space-y-6">
-      <a href="projects/local-llm-python.html" class="block p-4 rounded-xl bg-gray-800 hover:bg-gray-700 transition">
-        <h2 class="text-2xl font-semibold">Local LLM Projects in Python</h2>
-        <p class="text-gray-400">Built offline language model tools and assistants using `llama.cpp`, embeddings, vector DBs, and RAG pipelines.</p>
-      </a>
+  <header class="max-w-4xl w-full text-center mb-12">
+    <h1 class="text-5xl font-bold mb-2">Scott Lyons</h1>
+    <p class="text-gray-400 text-xl">AI Developer | Python Engineer | Data & Design Enthusiast</p>
+  </header>
 
-      <a href="projects/etl-n8n-pipelines.html" class="block p-4 rounded-xl bg-gray-800 hover:bg-gray-700 transition">
-        <h2 class="text-2xl font-semibold">ETL Pipelines using Python + n8n</h2>
-        <p class="text-gray-400">Data workflows using SQLAlchemy, pandas, and n8n to automate and visualize transformation pipelines.</p>
-      </a>
-
-      <a href="projects/ai-graphic-design.html" class="block p-4 rounded-xl bg-gray-800 hover:bg-gray-700 transition">
-        <h2 class="text-2xl font-semibold">AI Graphic Design (SORA & Local)</h2>
-        <p class="text-gray-400">High-quality design assets created using prompts and custom-trained ControlNet + SD pipelines.</p>
-      </a>
+  <main class="max-w-4xl w-full space-y-8">
+    <section>
+      <h2 class="text-3xl font-semibold mb-4 border-b border-gray-700 pb-2">Projects</h2>
+      <ul class="space-y-4">
+        <li>
+          <a href="projects/local-llm-python.html" class="block p-4 rounded-lg bg-gray-800 hover:bg-gray-700 transition">
+            <h3 class="text-2xl font-semibold">Local LLM Projects in Python</h3>
+            <p class="text-gray-400 mt-1">Offline language models, embeddings, RAG pipelines, and Llama.cpp tools.</p>
+          </a>
+        </li>
+        <li>
+          <a href="projects/etl-n8n-pipelines.html" class="block p-4 rounded-lg bg-gray-800 hover:bg-gray-700 transition">
+            <h3 class="text-2xl font-semibold">ETL Pipelines with Python & n8n</h3>
+            <p class="text-gray-400 mt-1">Automated data workflows using Python, pandas, SQLAlchemy, and n8n visual workflows.</p>
+          </a>
+        </li>
+        <li>
+          <a href="projects/ai-graphic-design.html" class="block p-4 rounded-lg bg-gray-800 hover:bg-gray-700 transition">
+            <h3 class="text-2xl font-semibold">AI Graphic Design (SORA & Local Models)</h3>
+            <p class="text-gray-400 mt-1">Creative AI-generated designs using SORA and custom Stable Diffusion pipelines.</p>
+          </a>
+        </li>
+      </ul>
     </section>
-  </div>
+  </main>
+
+  <footer class="mt-auto max-w-4xl w-full text-center text-gray-600 text-sm py-6">
+    © 2025 Scott Lyons
+  </footer>
+
 </body>
 </html>
