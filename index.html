@@ -1,60 +1,65 @@
 <!DOCTYPE html>
-<html lang="en" >
-
- 
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Scott Lyons - AI & Python Portfolio</title>
-  <!-- Tailwind CSS CDN -->
+  <title>Scott Lyons – AI & Python Portfolio</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-white font-sans min-h-screen flex flex-col items-center p-6">
+<body class="bg-gray-950 text-white font-sans min-h-screen">
 
-  <nav class="bg-gray-800 text-white px-6 py-4 mb-8 shadow">
-  <div class="max-w-4xl mx-auto flex justify-between items-center">
-    <a href="index.html" class="text-xl font-bold">Scott Lyons</a>
-    <ul class="flex gap-6 text-sm">
-      <li><a href="index.html" class="hover:underline">Home</a></li>
-      <li><a href="projects/local-llm-python.html" class="hover:underline">Projects</a></li>
-      <li><a href="contact.html" class="hover:underline">Contact</a></li>
-    </ul>
-  </div>
-</nav>
-  
-  <header class="max-w-4xl w-full text-center mb-12">
-    <h1 class="text-5xl font-bold mb-2">Scott Lyons</h1>
-    <p class="text-gray-400 text-xl">AI Developer | Python Engineer | Data & Design Enthusiast</p>
-  </header>
+  <!-- Glassy Navigation -->
+  <nav class="bg-gray-800/70 backdrop-blur-sm text-white py-4 shadow-md">
+    <div class="max-w-5xl mx-auto flex items-center justify-between px-6">
+      <div class="text-2xl font-bold tracking-wide">Scott Lyons</div>
+      <div class="flex gap-8 text-base">
+        <a href="index.html" class="hover:text-blue-400 transition">Home</a>
+        <a href="projects/local-llm-python.html" class="hover:text-blue-400 transition">Projects</a>
+        <a href="contact.html" class="hover:text-blue-400 transition">Contact</a>
+      </div>
+    </div>
+  </nav>
 
-  <main class="max-w-4xl w-full space-y-8">
-    <section>
-      <h2 class="text-3xl font-semibold mb-4 border-b border-gray-700 pb-2">Projects</h2>
-      <ul class="space-y-4">
-        <li>
-          <a href="projects/local-llm-python.html" class="block p-4 rounded-lg bg-gray-800 hover:bg-gray-700 transition">
-            <h3 class="text-2xl font-semibold">Local LLM Projects in Python</h3>
-            <p class="text-gray-400 mt-1">Offline language models, embeddings, RAG pipelines, and Llama.cpp tools.</p>
-          </a>
-        </li>
-        <li>
-          <a href="projects/etl-n8n-pipelines.html" class="block p-4 rounded-lg bg-gray-800 hover:bg-gray-700 transition">
-            <h3 class="text-2xl font-semibold">ETL Pipelines with Python & n8n</h3>
-            <p class="text-gray-400 mt-1">Automated data workflows using Python, pandas, SQLAlchemy, and n8n visual workflows.</p>
-          </a>
-        </li>
-        <li>
-          <a href="projects/ai-graphic-design.html" class="block p-4 rounded-lg bg-gray-800 hover:bg-gray-700 transition">
-            <h3 class="text-2xl font-semibold">AI Graphic Design (SORA & Local Models)</h3>
-            <p class="text-gray-400 mt-1">Creative AI-generated designs using SORA and custom Stable Diffusion pipelines.</p>
-          </a>
-        </li>
-      </ul>
+  <!-- Main Content -->
+  <main class="max-w-5xl mx-auto px-6 py-12 space-y-12">
+
+    <!-- Intro -->
+    <section class="text-center">
+      <h1 class="text-5xl font-bold mb-2">Scott Lyons</h1>
+      <p class="text-gray-400 text-lg">AI Developer · Python Engineer · Data + Design Hybrid</p>
     </section>
+
+    <!-- Projects -->
+    <section>
+      <h2 class="text-3xl font-semibold mb-6 border-b border-gray-800 pb-2">Featured Projects</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Project 1 -->
+        <a href="projects/local-llm-python.html" class="block p-6 rounded-xl bg-gray-800 hover:bg-gray-700 transition shadow-lg">
+          <h3 class="text-xl font-semibold mb-1">Local LLM Projects in Python</h3>
+          <p class="text-gray-400 text-sm">Offline AI tools using llama.cpp, embeddings, vector search, and RAG pipelines.</p>
+        </a>
+
+        <!-- Project 2 -->
+        <a href="projects/etl-n8n-pipelines.html" class="block p-6 rounded-xl bg-gray-800 hover:bg-gray-700 transition shadow-lg">
+          <h3 class="text-xl font-semibold mb-1">ETL Pipelines with Python & n8n</h3>
+          <p class="text-gray-400 text-sm">Data automation with pandas, SQLAlchemy, MySQL, and visual workflows in n8n.</p>
+        </a>
+
+        <!-- Project 3 -->
+        <a href="projects/ai-graphic-design.html" class="block p-6 rounded-xl bg-gray-800 hover:bg-gray-700 transition shadow-lg">
+          <h3 class="text-xl font-semibold mb-1">AI Graphic Design (SORA & Local Models)</h3>
+          <p class="text-gray-400 text-sm">Creative visuals using ControlNet, Stable Diffusion, and prompt engineering.</p>
+        </a>
+
+      </div>
+    </section>
+
   </main>
 
-  <footer class="mt-auto max-w-4xl w-full text-center text-gray-600 text-sm py-6">
-    © 2025 Scott Lyons
+  <!-- Footer -->
+  <footer class="text-center text-gray-600 text-sm py-8 border-t border-gray-800">
+    © 2025 Scott Lyons · Built with HTML, Tailwind, and GitHub Pages
   </footer>
 
 </body>
