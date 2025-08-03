@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IMDb Incremental ETL Pipeline</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #121212;
+      color: #f1f1f1;
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1, h2, h3 {
+      color: #ffffff;
+      border-bottom: 1px solid #333;
+      padding-bottom: 0.3rem;
+    }
+    code, pre {
+      background-color: #1e1e1e;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      font-family: monospace;
+      overflow-x: auto;
+    }
+    pre {
+      padding: 1rem;
+    }
+    a {
+      color: #80cbc4;
+    }
+    ul {
+      padding-left: 1.2rem;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #333;
+      margin: 2rem 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>IMDb Incremental ETL Pipeline</h1>
+
+  <p>This project is a professional-grade <strong>incremental ETL pipeline</strong> for IMDb datasets. It demonstrates skills in data engineering, automation, and database design using Python and MySQL.</p>
+
+  <h2>Features</h2>
+  <ul>
+    <li>Incremental sync using row hashing</li>
+    <li>Genre normalization into relational tables</li>
+    <li>Indexing for query performance</li>
+    <li>Logging and backup system</li>
+  </ul>
+
+  <h2>Project Structure</h2>
+  <ul>
+    <li><code>new_download/</code>: Raw IMDb files</li>
+    <li><code>new_extract/</code>: Extracted TSVs</li>
+    <li><code>previously_uploaded/</code>: Reference snapshot</li>
+    <li><code>logs/imdb_sync_logs.txt</code>: Operation log</li>
+    <li><code>imdb_etl_script.py</code>: Core ETL script</li>
+  </ul>
+
+  <h2>Workflow</h2>
+  <ol>
+    <li>Download and extract IMDb data</li>
+    <li>Compare against previously uploaded data</li>
+    <li>Insert new/changed records using SQL</li>
+    <li>Normalize genres into a relational structure</li>
+    <li>Create indexes</li>
+    <li>Backup current dataset</li>
+  </ol>
+
+  <h2>How to Run</h2>
+  <pre><code>pip install pandas sqlalchemy tqdm pymysql
+python imdb_etl_script.py</code></pre>
+
+  <h2>Technologies</h2>
+  <ul>
+    <li>Python (pandas, SQLAlchemy, tqdm)</li>
+    <li>MySQL</li>
+    <li>Logging, row hashing, genre parsing</li>
+  </ul>
+
+  <h2>Author</h2>
+  <p>Built by Scott Lyons to demonstrate real-world data engineering skills.</p>
+
+  <hr />
+</body>
+</html>
