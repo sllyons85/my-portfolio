@@ -83,7 +83,7 @@ SET GLOBAL local_infile = 1;
 Also ensure your SQLAlchemy URL enables it, e.g.:
 
 ```
-mysql+pymysql://USER:PASS@HOST:3306/imdb?local_infile=1&charset=utf8mb4
+mysql+pymysql://USERNAME:PASSWORD@HOST:3306/imdb?local_infile=1&charset=utf8mb4
 ```
 
 > Security note: Only enable `LOCAL INFILE` if you trust the source and environment.
@@ -99,7 +99,7 @@ NEW_DOWNLOAD_DIR = Path(r"D:\LLMs\imdb\imdb_files\new_download")
 NEW_EXTRACT_DIR  = Path(r"D:\LLMs\imdb\imdb_files\new_extract")
 LOG_PATH         = Path(r"D:\LLMs\imdb\logs\imdb_sync_logs.txt")
 
-DB_URI = "mysql+pymysql://root:***@localhost:3306/imdb?local_infile=1&charset=utf8mb4"
+DB_URI = "mysql+pymysql://USERNAME:PASSWORD@localhost:3306/imdb?local_infile=1&charset=utf8mb4"
 CHUNK_ROWS = int(os.getenv("CHUNK_ROWS", "150000"))
 FIRST_RUN = True  # flip to False after first successful build
 ```
