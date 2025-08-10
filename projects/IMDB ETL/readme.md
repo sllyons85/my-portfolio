@@ -1,89 +1,228 @@
-# IMDb Incremental ETL Pipeline
+# IMDb Incremental ETL (xxhash64, low‑RAM, chunked)
 
-This project is a professional-grade **incremental ETL pipeline** for IMDb datasets. It demonstrates skills in data engineering, automation, and database design. The pipeline is built in Python and loads data into a MySQL database, using a smart diffing system to avoid redundant data loads.
+A production‑style, portfolio‑ready ETL that ingests the official IMDb TSVs, computes an xxhash64 per row, and performs idempotent incremental upserts into MySQL. Designed for low RAM environments using chunked loads + LOAD DATA LOCAL INFILE for speed. First run builds the schema and (optionally) drops/rebuilds secondary indexes for faster bulk load; subsequent runs only touch changed rows.
 
 ---
 
-## Features
+## Key Capabilities
 
-- **Incremental Loads**: Detects new or updated records using row hashing and only syncs what’s changed
-- **Genre Normalization**: Splits genre strings into a relational structure with proper foreign keys
-- **Indexing**: Adds indexes to improve downstream query performance
-- **Logging**: Logs all operations to a file for reproducibility and debugging
+- FIRST_RUN toggle to control full build vs. incremental updates.
+- xxhash64 row digest stored as BINARY(8) (row_hash) on each table.
+- Hash‑guarded upserts via ON DUPLICATE KEY UPDATE, updating only when row_hash differs.
+- Fast ingestion with LOAD DATA LOCAL INFILE (chunked temp files).
+- Low‑RAM operation: reads TSVs in windows (CHUNK_ROWS), avoids dtype inflation (strings by default).
+- Index management on first run to accelerate bulk loads.
+- Robust logging with a rotating file handler (file + console).
+- Genre normalization without JSON_TABLE using a recursive split in SQL; fills genres and title_genres lookup tables.
+
+---
+
+## Data Flow (High Level)
+
+1. **Download** IMDb gz files from `https://datasets.imdbws.com/`.
+2. **Extract** to TSV.
+3. **Chunk** TSV → compute `xxhash64` per row (hex during temp stage).
+4. **Stage** into temp table via `LOAD DATA LOCAL INFILE`.
+5. **Convert** hex → `BINARY(8)` and **upsert** into target with hash guard.
+6. **Normalize** genres (`title_basics.genres` → `genres` & `title_genres`).
 
 ---
 
 ## Project Structure
 
-- `new_download/`: Raw IMDb .tsv.gz files downloaded from IMDb
-- `new_extract/`: Extracted TSV files (uncompressed)
-- `previously_uploaded/`: Reference for change detection (previous load)
-- `logs/imdb_sync_logs.txt`: Log file
-- `imdb_etl_script.py`: Main ETL script
-- `README.md`: This file
+```
+imdb_etl.py              # Main script (this repo)
+README.md                # You are here
+logs/imdb_sync_logs.txt  # Rotating ETL logs (path configurable)
+imdb_files/
+  new_download/          # Fresh .tsv.gz files
+  new_extract/           # Extracted .tsv files
+```
 
 ---
 
-## Datasets Used
-All data is downloaded from the official [IMDb dataset repository](https://www.imdb.com/interfaces/):
+## Requirements
 
-- `name.basics.tsv.gz`
-- `title.basics.tsv.gz`
-- `title.crew.tsv.gz`
-- `title.episode.tsv.gz`
-- `title.principals.tsv.gz`
-- `title.ratings.tsv.gz`
+- **Python** 3.9+
+- **MySQL** 8.0+ (tested) with `local_infile` enabled
+- Packages:
+  - `pandas`, `sqlalchemy`, `pymysql`, `xxhash`, `requests`, `tqdm`
 
----
+Install packages:
 
-## Tech Stack
-
-- **Python**: Core ETL logic using `pandas`, `sqlalchemy`, and `tqdm`
-- **MySQL**: Target data warehouse
-- **Shell tools**: Uses `curl` for downloads
-- **Logging**: Logs captured via `redirect_stdout`
+```bash
+pip install pandas SQLAlchemy pymysql xxhash requests
+```
 
 ---
 
-## Workflow
+## MySQL Setup (ENABLE `LOCAL INFILE`)
 
-1. **Download & Extract**: Fetches `.tsv.gz` files and unzips them
-2. **Compare**: Checks for row changes against previously loaded data
-3. **Sync**: Uses SQL `REPLACE` to insert new or updated rows
-4. **Normalize Genres**: Parses genre strings into a relational structure
-5. **Indexing**: Creates indexes for performance
-6. **Backup**: Copies current files into `previously_uploaded/` for future comparisons
+This pipeline uses LOAD DATA LOCAL INFILE. Ensure both the server and client/connector allow it.
 
----
+**Option A — via config file** (recommended)
 
-## How to Run
+In your MySQL config (e.g., `my.cnf` or `my.ini`):
 
-1. Install required packages:
-   ```bash
-   pip install pandas sqlalchemy tqdm pymysql
-   ```
+```
+[mysqld]
+local_infile = 1
 
-2. Set up your MySQL database (use the schema defined in the script).
-3. Update paths in the config section of `imdb_etl_script.py`.
-4. Run the script:
-   ```bash
-   python imdb_etl_script.py
-   ```
+[client]
+local-infile = 1
+```
 
----
+Restart MySQL after changes.
 
-## Future Enhancements
+**Option B — at runtime** (requires sufficient privileges)
 
-- Add scheduling via Airflow or Prefect
-- Visual dashboard using Streamlit or Superset
-- Unit testing for ETL logic (pytest)
-- Dockerize the environment for easier deployment
+```sql
+SET GLOBAL local_infile = 1;
+```
+
+Also ensure your SQLAlchemy URL enables it, e.g.:
+
+```
+mysql+pymysql://USER:PASS@HOST:3306/imdb?local_infile=1&charset=utf8mb4
+```
+
+> Security note: Only enable `LOCAL INFILE` if you trust the source and environment.
 
 ---
 
-## Author
-Built by Scott Lyons as part of a personal portfolio to demonstrate real-world data engineering skills.
+## Configuration
 
-Feel free to fork, reuse, or contact me for collaboration.
+Edit paths and DB URI near the top of the script:
+
+```python
+NEW_DOWNLOAD_DIR = Path(r"D:\LLMs\imdb\imdb_files\new_download")
+NEW_EXTRACT_DIR  = Path(r"D:\LLMs\imdb\imdb_files\new_extract")
+LOG_PATH         = Path(r"D:\LLMs\imdb\logs\imdb_sync_logs.txt")
+
+DB_URI = "mysql+pymysql://root:***@localhost:3306/imdb?local_infile=1&charset=utf8mb4"
+CHUNK_ROWS = int(os.getenv("CHUNK_ROWS", "150000"))
+FIRST_RUN = True  # flip to False after first successful build
+```
+
+Environment override for chunk size:
+
+```bash
+# Example: smaller chunks for limited RAM
+set CHUNK_ROWS=75000   # Windows (cmd)
+export CHUNK_ROWS=75000 # Linux/macOS
+```
 
 ---
+
+## Running the Pipeline
+
+**First run (schema + full load):**
+
+1. Set `FIRST_RUN = True`.
+2. Ensure MySQL `local_infile` is enabled (see above).
+3. Run the script:
+
+```bash
+python imdb_etl.py
+```
+
+On success, flip `FIRST_RUN = False` for future runs.
+
+**Incremental updates:**
+
+- With `FIRST_RUN = False`, each execution:
+  - recomputes `row_hash` per incoming row chunk,
+  - upserts into target tables only when the incoming hash differs,
+  - refreshes genre mappings (idempotent).
+
+Logs go to both console and `LOG_PATH` with rotation enabled.
+
+---
+
+## Tables Created
+
+- `name_basics (PK: nconst, row_hash)`
+- `title_basics (PK: tconst, row_hash)`
+- `title_crew (PK: tconst, row_hash)`
+- `title_episode (PK: tconst, row_hash)`
+- `title_principals (PK: tconst, ordering, row_hash)`
+- `title_ratings (PK: tconst, row_hash)`
+- `genres (genre_id, genre_name UNIQUE)`
+- `title_genres (tconst, genre_id)`
+
+Selected secondary indexes (re)created after first run for lookup speed (e.g., `name_basics.primaryName`, `title_basics.startYear`, `title_basics.genres`).
+
+---
+
+## How Hash‑Guarded Upserts Work
+
+During staging we load a hex hash and then convert to BINARY(8) in MySQL:
+
+```sql
+UPDATE staging SET row_hash = UNHEX(row_hash_hex);
+```
+
+Upsert only updates when the incoming row_hash differs from the existing row:
+
+```sql
+INSERT INTO target (...)
+VALUES (...)
+ON DUPLICATE KEY UPDATE
+  colX = IF(VALUES(row_hash) <> target.row_hash, VALUES(colX), target.colX),
+  row_hash = IF(VALUES(row_hash) <> target.row_hash, VALUES(row_hash), target.row_hash);
+```
+
+This avoids unnecessary writes and keeps incremental runs fast.
+
+---
+
+## Genre Normalization
+
+The IMDb title_basics.genres column stores comma‑separated genre tokens. We use a recursive CTE to split values safely (skipping null \N blanks) and populate:
+
+- genres (genre_id, genre_name) with distinct tokens
+- title_genres (tconst, genre_id) as the junction
+
+---
+
+## Performance Tips
+
+- Start with larger CHUNK_ROWS (e.g., 150k) and tune based on RAM.
+- Keep FIRST_RUN=True only for the initial build; it drops secondary indexes to speed bulk insert, then rebuilds them once.
+- Ensure innodb_flush_log_at_trx_commit and related settings are sensible for your environment.
+- Put the data directory and temp files on a fast SSD if possible.
+
+---
+
+## Logging & Observability
+
+- Rotating logs via RotatingFileHandler (up to ~5 MB x 3 backups).
+- Both console and file output with timestamps and levels.
+- Clear start/finish markers per table and per mode (FIRST_RUN vs incremental).
+
+---
+
+## Roadmap Ideas (Portfolio Enhancements)
+
+- Add metrics per stage (rows/s, elapsed) and export to Prometheus.
+- Optional Dask parallelization for multi‑file ingestion (kept out here for clarity).
+- CDC snapshots and historical audit tables (SCD Type 2).
+- Docker Compose for one‑command local setup (MySQL + ETL).
+
+---
+
+## Credits
+
+- IMDb datasets: © IMDb. Use subject to IMDb terms.
+- Hashing: [`xxhash`](https://cyan4973.github.io/xxHash/).
+
+---
+
+## Quickstart TL;DR
+
+1) Enable local_infile on MySQL.  
+2) Set paths + DB_URI in the script.  
+3) Run with FIRST_RUN=True once → flip to False.  
+4) Schedule incremental runs (e.g., weekly).
+
+
