@@ -85,7 +85,7 @@
 pip install pandas SQLAlchemy pymysql xxhash requests tqdm
 
 # Example DB URI
-mysql+pymysql://root:***@localhost:3306/imdb?local_infile=1&amp;charset=utf8mb4</code></pre>
+mysql+pymysql://USERNAME:PASSWORD@localhost:3306/imdb?local_infile=1&amp;charset=utf8mb4</code></pre>
     </section>
 
     <section class="card" id="setup">
@@ -94,7 +94,7 @@ mysql+pymysql://root:***@localhost:3306/imdb?local_infile=1&amp;charset=utf8mb4<
 NEW_EXTRACT_DIR  = Path(r"D:\LLMs\imdb\imdb_files\new_extract")
 LOG_PATH         = Path(r"D:\LLMs\imdb\logs\imdb_sync_logs.txt")
 
-DB_URI = "mysql+pymysql://root:***@localhost:3306/imdb?local_infile=1&amp;charset=utf8mb4"
+DB_URI = "mysql+pymysql://USERNAME:PASSWORD@localhost:3306/imdb?local_infile=1&amp;charset=utf8mb4"
 CHUNK_ROWS = int(os.getenv("CHUNK_ROWS", "150000"))
 FIRST_RUN = True</code></pre>
       <p class="small">Tip: Tune <code>CHUNK_ROWS</code> to fit your RAM; smaller chunks reduce memory spikes.</p>
